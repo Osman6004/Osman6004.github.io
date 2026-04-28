@@ -939,7 +939,7 @@
         return;
       }
 
-      btn.textContent = 'Sending…';
+      btn.textContent = 'Sending...';
       btn.disabled = true;
       status.style.display = 'none';
 
@@ -951,25 +951,25 @@
           headers: { 'Accept': 'application/json' },
           body: formData
         });
+        const data = await res.json();
         if (res.ok) {
           status.style.display = 'block';
           status.style.color = 'var(--accent)';
-          status.textContent = "Message sent — I’ll be in touch soon.";
+          status.textContent = 'Message sent - I will be in touch soon.';
           form.reset();
           grecaptcha.reset();
         } else {
-          throw new Error();
+          throw new Error(JSON.stringify(data));
         }
-      } catch {
+      } catch (err) {
         status.style.display = 'block';
         status.style.color = '#c0392b';
-        status.textContent = 'Something went wrong. Please email me directly.';
+        status.textContent = 'Error: ' + (err.message || 'Unknown error');
         grecaptcha.reset();
       }
       btn.textContent = 'Send Message';
       btn.disabled = false;
     }
-
   </script>
 </body>
 </html>
