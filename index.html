@@ -617,7 +617,6 @@
       h1 { font-size: clamp(42px, 12vw, 72px); }
     }
   </style>
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 
@@ -869,7 +868,6 @@
           <textarea id="message" name="message" rows="5" placeholder="Tell me about your project or idea..." required></textarea>
         </div>
         <div>
-          <div class="g-recaptcha" data-sitekey="6Ld1I84sAAAAAEx8J00h6MOXqVwncaSUd956O0qb" style="margin-bottom: 16px;"></div>
           <button type="submit" class="btn btn-primary" id="submit-btn">Send Message</button>
         </div>
         <div id="form-status" style="display:none; margin-top: 12px; font-size: 13px; letter-spacing: 0.08em;"></div>
@@ -931,41 +929,28 @@
       const btn = document.getElementById('submit-btn');
       const status = document.getElementById('form-status');
 
-      const recaptchaResponse = grecaptcha.getResponse();
-      if (!recaptchaResponse) {
-        status.style.display = 'block';
-        status.style.color = '#c0392b';
-        status.textContent = 'Please complete the reCAPTCHA.';
-        return;
-      }
-
       btn.textContent = 'Sending...';
       btn.disabled = true;
       status.style.display = 'none';
 
       try {
-        const formData = new FormData(form);
-        formData.append('g-recaptcha-response', recaptchaResponse);
         const res = await fetch('https://formspree.io/f/xaqakdrq', {
           method: 'POST',
           headers: { 'Accept': 'application/json' },
-          body: formData
+          body: new FormData(form)
         });
-        const data = await res.json();
         if (res.ok) {
           status.style.display = 'block';
           status.style.color = 'var(--accent)';
           status.textContent = 'Message sent - I will be in touch soon.';
           form.reset();
-          grecaptcha.reset();
         } else {
-          throw new Error(JSON.stringify(data));
+          throw new Error();
         }
-      } catch (err) {
+      } catch {
         status.style.display = 'block';
         status.style.color = '#c0392b';
-        status.textContent = 'Error: ' + (err.message || 'Unknown error');
-        grecaptcha.reset();
+        status.textContent = 'Something went wrong. Please email me directly.';
       }
       btn.textContent = 'Send Message';
       btn.disabled = false;
